@@ -13,7 +13,12 @@
     "paths": {
       "~/*": ["src/*"],
       "@/*": ["src/*"]
-    }
+    },
+    "types": [
+      "node",
+      "@nativescript-dom/core-types",
+      "@nativescript-dom/angular-types"
+    ]
   },
   "include": ["src/tests/**/*.ts", "src/**/*.ios.ts", "src/**/*.android.ts"],
   "files": ["./src/main.ts", "./references.d.ts", "./src/polyfills.ts"],

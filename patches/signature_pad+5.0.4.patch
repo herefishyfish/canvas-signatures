@@ -1,0 +1,69 @@
+diff --git a/node_modules/signature_pad/dist/signature_pad.js b/node_modules/signature_pad/dist/signature_pad.js
+index 4a51531..1a8fad3 100644
+--- a/node_modules/signature_pad/dist/signature_pad.js
++++ b/node_modules/signature_pad/dist/signature_pad.js
+@@ -298,19 +298,8 @@ class SignaturePad extends SignatureEventTarget {
+         }
+     }
+     on() {
+-        this.canvas.style.touchAction = 'none';
+-        this.canvas.style.msTouchAction = 'none';
+-        this.canvas.style.userSelect = 'none';
+-        const isIOS = /Macintosh/.test(navigator.userAgent) && 'ontouchstart' in document;
+-        if (window.PointerEvent && !isIOS) {
+-            this._handlePointerEvents();
+-        }
+-        else {
+-            this._handleMouseEvents();
+-            if ('ontouchstart' in window) {
+-                this._handleTouchEvents();
+-            }
+-        }
++        // Force enable touch-action property on the canvas
++        this._handleTouchEvents();
+     }
+     off() {
+         this.canvas.style.touchAction = 'auto';
+@@ -393,10 +382,11 @@ class SignaturePad extends SignatureEventTarget {
+         };
+     }
+     _strokeBegin(event) {
+-        const cancelled = !this.dispatchEvent(new CustomEvent('beginStroke', { detail: event, cancelable: true }));
+-        if (cancelled) {
+-            return;
+-        }
++        const cancelled = !this.dispatchEvent({ type: 'beginStroke', eventInitDict: { detail: event, cancelable: true }});
++        // Always cancelling because we don't know what to do with our CustomEvent.
++        // if (cancelled) {
++        //     return;
++        // }
+         const { addEventListener } = this._getListenerFunctions();
+         switch (event.event.type) {
+             case 'mousedown':
+@@ -427,7 +417,7 @@ class SignaturePad extends SignatureEventTarget {
+             this._strokeBegin(event);
+             return;
+         }
+-        this.dispatchEvent(new CustomEvent('beforeUpdateStroke', { detail: event }));
++        this.dispatchEvent({ type: 'beforeUpdateStroke', eventInitDict: { detail: event }});
+         const point = this._createPoint(event.x, event.y, event.pressure);
+         const lastPointGroup = this._data[this._data.length - 1];
+         const lastPoints = lastPointGroup.points;
+@@ -451,7 +441,7 @@ class SignaturePad extends SignatureEventTarget {
+                 pressure: point.pressure,
+             });
+         }
+-        this.dispatchEvent(new CustomEvent('afterUpdateStroke', { detail: event }));
++        this.dispatchEvent({ type: 'afterUpdateStroke', eventInitDict: { detail: event }});
+     }
+     _strokeEnd(event, shouldUpdate = true) {
+         this._removeMoveUpEventListeners();
+@@ -462,7 +452,7 @@ class SignaturePad extends SignatureEventTarget {
+             this._strokeUpdate(event);
+         }
+         this._drawingStroke = false;
+-        this.dispatchEvent(new CustomEvent('endStroke', { detail: event }));
++        this.dispatchEvent({ type: 'endStroke', eventInitDict: { detail: event }});
+     }
+     _handlePointerEvents() {
+         this._drawingStroke = false;
