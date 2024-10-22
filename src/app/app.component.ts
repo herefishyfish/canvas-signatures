@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { Canvas } from "@nativescript/canvas";
-import { LoadEventData } from "@nativescript/core";
+import { LoadEventData, Screen } from "@nativescript/core";
 import SignaturePad from "signature_pad";
 
 const PEN_COLORS = [
@@ -26,18 +26,17 @@ export class AppComponent {
 
   onCanvasReady(args: LoadEventData) {
     this.canvas = args.object as Canvas;
-    this.canvas.width = this.canvas.clientWidth;
-    this.canvas.height = this.canvas.clientHeight;
+    this.canvas.width = this.canvas.clientWidth * Screen.mainScreen.scale;
+    this.canvas.height = this.canvas.clientHeight * Screen.mainScreen.scale;
+    this.canvas
+      .getContext("2d")
+      .scale(Screen.mainScreen.scale, Screen.mainScreen.scale);
 
     this.signaturePad = new SignaturePad(
-      args.object as unknown as HTMLCanvasElement,
+      this.canvas as unknown as HTMLCanvasElement,
       {
         penColor: "#5d9fdeff",
         backgroundColor: "#f0f0f0",
-        canvasContextOptions: {
-          alpha: true,
-        },
-        minWidth: 1,
       }
     );
   }
@@ -62,10 +61,10 @@ export class AppComponent {
   }
 
   onWindowResize() {
-    if(!this.canvas) return;
+    if (!this.canvas) return;
 
-    this.canvas.width = this.canvas.clientWidth;
-    this.canvas.height = this.canvas.clientHeight;
+    this.canvas.width = this.canvas.clientWidth * Screen.mainScreen.scale;
+    this.canvas.height = this.canvas.clientHeight * Screen.mainScreen.scale;
     this.signaturePad.clear();
   }
 }
