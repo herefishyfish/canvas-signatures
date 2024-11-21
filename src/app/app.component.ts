@@ -33,7 +33,7 @@ export class AppComponent {
       .scale(Screen.mainScreen.scale, Screen.mainScreen.scale);
 
     this.signaturePad = new SignaturePad(
-      this.canvas as unknown as HTMLCanvasElement,
+      (this.canvas as any).toHTMLCanvas(),
       {
         penColor: "#5d9fdeff",
         backgroundColor: "#f0f0f0",
